@@ -8,11 +8,10 @@ cloudinary.config({
 });
 
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
+  cloudinary,
   params: {
-    folder: 'Wanderlust_DEV',
-    allowedFormats: ["png","jpg","jpeg"], // supports promises as well
-    public_id: (req, file) => 'computed-filename-using-request',
+    folder: "Wanderlust_DEV",
+    allowedFormats: ["png", "jpg", "jpeg"],
   },
 });
 

@@ -24,7 +24,6 @@ module.exports.createRoute=async (req,res,next)=>{
          console.log("Inside createRoute");
         let url=req.file.path;
         let filename=req.file.filename;
-        console.log(req.body.listing);
         const newListing=new Listing(req.body.listing);
         let location = `${newListing.location}, ${newListing.country}`;
       try {
@@ -75,7 +74,6 @@ module.exports.updateRoute=async (req,res)=>{
 module.exports.deleteRoute=async (req,res)=>{
     let {id}=req.params;  
     let deletedListing=  await Listing.findByIdAndDelete(id);
-   console.log(deletedListing);
    req.flash("success","Listing Deleted!");
    res.redirect("/listings");
 };
