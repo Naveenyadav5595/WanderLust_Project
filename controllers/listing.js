@@ -27,11 +27,17 @@ module.exports.createRoute=async (req,res,next)=>{
         console.log(req.body.listing);
         const newListing=new Listing(req.body.listing);
         let location = `${newListing.location}, ${newListing.country}`;
-        let response = await geocoder.geocode(location);
-        if (response.length > 0) {
+      try {
+         let response = await geocoder.geocode(location);
+         if (response.length > 0) {
+            newListing.geometry = {type: "Point",coordinates: [response[0].longitude, response[0].latitude], };
+         } else {
+           newListing.geometry = {type: "Point", coordinates: [0, 0],};
+         }
+         }catch (err) {
             newListing.geometry = {
                type: "Point",
-               coordinates: [response[0].longitude,response[0].latitude]
+               coordinates: [0, 0],
             };
          }
         newListing.owner=req.user._id,
