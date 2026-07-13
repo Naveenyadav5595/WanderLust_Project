@@ -1,55 +1,94 @@
-<style>
-  .btn-search {
-    background-color: #fe424d !important;
-    color: #fff !important;
-     border: none !important;
-    border-radius: 25px;  
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:0.5rem;
-  }
-  .btn-search:hover{
-    background-color:#e63946 !important;
-    color:white !important;
-  }
-  .search-inp {
-       border-radius: 25px;  
-  }
-</style>
+<nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
+    <div class="container-fluid">
+        <!-- Logo -->
+        <a class="navbar-brand" href="/listings">
+            <i class="fa-solid fa-compass"></i>
+        </a>
+        <!-- Mobile Left Links -->
+        <div class="d-flex d-lg-none mobile-links">
+            <a href="/listings" class="nav-link">Explore</a>
+        </div>
+        <!-- Toggle -->
+        <button
+            class="navbar-toggler border-0 shadow-none"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mobileMenu"
+            aria-controls="mobileMenu"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <!-- Desktop Navbar -->
+        <div class="collapse navbar-collapse d-none d-lg-flex">
+            <!-- Explore -->
+            <div class="navbar-nav">
+                <a class="nav-link fw-semibold" href="/listings">
+                    Explore
+                </a>
+            </div>
+            <!-- Search -->
+            <form
+                class="d-flex mx-auto"
+                action="/listings/search"
+                method="GET">
+                <input
+                    class="form-control search-inp"
+                    type="search"
+                    name="search"
+                    placeholder="Search destinations">
+                <button class="btn btn-search">
+                    <i class="fa-solid fa-magnifying-glass"></i> Search
+                </button>
+            </form>
+            <!-- Right -->
+            <div class="navbar-nav ms-auto align-items-center">
+                <a class="nav-link fw-semibold" href="/listings/new">
+                    Airbnb your home
+                </a>
+                <% if(!currUser){ %>
+                    <a class="nav-link fw-semibold" href="/signup">
+                        Sign Up
+                    </a>
+                    <a class="nav-link fw-semibold" href="/login">
+                        Log In
+                    </a>
+                <% } else { %>
+                    <a class="nav-link fw-semibold" href="/logout">
+                        Log Out
+                    </a>
+                <% } %>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="collapse mobile-menu" id="mobileMenu">
+            <form action="/listings/search" method="GET" class="d-flex align-items-center">
+                <input
+                  class="form-control me-2 search-inp"
+                  type="search"
+                  name="search"
+                  placeholder="Search destinations">
+                <button class="btn btn-search ms-2">
+                  <i class="fa-solid fa-magnifying-glass"></i> Search
+                </button>
+            </form>
 
+            <a href="/listings/new" class="dropdown-item">
+                Airbnb your home
+            </a>
+            <% if(!currUser){ %>
+                <a href="/signup" class="dropdown-item">
+                    Sign Up
+                </a>
+                <a href="/login" class="dropdown-item">
+                    Log In
+                </a>
+            <% } else { %>
+                <a href="/logout" class="dropdown-item">
+                    Log Out
+                </a>
 
-<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/listings"><i class="fa-solid fa-compass"></i></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse">
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-link" href="/listings"><b>Explore</b></a>
-      </div>
-      <!-- search button in navbar -->
-      <div class="navbar-nav ms-auto">
-        <form class="d-flex" role="search" action="/listings/search" method="GET">
-          <input class="form-control me-2 search-inp" type="search" name="search" placeholder="Search destinations" />
-          <button class="btn btn-search" type="submit">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            Search
-          </button>
-        </form>
-      </div>
-
-      <div class="navbar-nav ms-auto">
-        <!-- if req.user not exist means user is looged out so signup and sign in oprions else logout option -->
-        <a class="nav-link" href="/listings/new"><b>Airbnb your home</b></a>
-        <% if(!currUser){ %>
-          <a class="nav-link "  href="/signup"><b>Sign up</b></a>
-          <a class="nav-link" href="/login"><b>Log in</b></a>
-        <% } else { %> 
-          <a class="nav-link" href="/logout"><b>Log out</b></a>
-        <%}%>
-      </div>
-
+            <% } %>
+        </div>
     </div>
-  </div>
-</nav> 
+</nav>
