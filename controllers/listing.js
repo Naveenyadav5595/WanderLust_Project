@@ -1,4 +1,5 @@
 const Listing=require("../models/listing.js");
+const Booking=require("../models/booking.js");
 const geocoder = require("../init/geocoder");
 
 module.exports.indexRoute= async (req,res)=>{
@@ -94,4 +95,93 @@ module.exports.searchListing = async (req, res) => {
       return res.redirect("/listings");
    }
    res.render("listings/index.ejs", { allListings });
+};
+
+module.exports.availabilityRoute=async (req,res)=>{
+     const {id}=req.params;
+     const listing=await Listing.findById(id);
+     console.log(listing);
+      if (!listing) {
+        req.flash("error", "Listing not found");
+        return res.redirect("/listings");
+      }
+     res.render("listings/availabilityCheck.ejs",{listing});
+};
+
+
+module.exports.checkAvailabilityRoute=async (req,res)=>{
+   const { id } = req.params;
+   const {checkIn,checkOut,guests} = req.body;
+   const listing = await Listing.findById(id);
+   if (!listing) {
+      req.flash("error", "Listing not found");
+      return res.redirect("/listings");
+   }
+    // Convert dates
+   const newCheckIn = new Date(checkIn);
+   const newCheckOut = new Date(checkOut);
+   const today = new Date().toISOString().split("T")[0];
+   if (checkIn < today) {
+      req.flash("error","Check-in date cannot be in the past.");
+      return res.redirect(`/listings/${id}/checkAvailability`);
+   }
+      // Validate dates
+   if (newCheckIn >= newCheckOut) {
+      req.flash(
+         "error",
+         "Check-out must be after check-in."
+      );
+      return res.redirect(
+         `/listings/${id}/checkAvailability`
+      );
+   }
+    // Validate guests
+   if (guests < 1) {
+        req.flash(
+            "error",
+            `Atleast 1 guests must be present`
+        );
+        return res.redirect(
+            `/listings/${id}/checkAvailability`
+        );
+   }
+   // find booking from Booking model whose id=id
+   const bookings = await Booking.find({
+     listing: id,
+     status: { $in: ["pending", "confirmed"] }
+   });
+   
+    // Check overlap
+   const isOverlapping = bookings.some((booking) => {
+        return (
+            newCheckIn < booking.checkOut &&
+            newCheckOut > booking.checkIn
+        );
+   });
+
+   // if overlapping
+   if (isOverlapping) {
+        req.flash(
+            "error",
+            "Sorry, this listing is not available for these dates."
+        );
+        return res.redirect(
+            `/listings/${id}/checkAvailability`
+        );
+   }
+   // listing is avalibale procecd for booking
+   const timeDifference = newCheckOut - newCheckIn;
+   const nights = Math.ceil(
+      timeDifference / (1000 * 60 * 60 * 24)
+   );
+   //calculating total price=listingprice*nights
+   const totalPrice = listing.price * nights;
+   return res.render("bookings/summary.ejs", {
+    listing,
+    checkIn: newCheckIn,
+    checkOut: newCheckOut,
+    guests,
+    nights,
+    totalPrice
+   });
 };

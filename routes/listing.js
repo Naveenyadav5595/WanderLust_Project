@@ -41,5 +41,10 @@ router.delete("/:id",isLoggedIn,isOwner, wrapAsync(listingControllers.deleteRout
 // specific show route
 router.get("/category/:category", listingControllers.filterCategory);
 
+// route to get data for availability check
+router.get("/:id/checkAvailability",isLoggedIn,wrapAsync(listingControllers.availabilityRoute));
+
+// route to check availability
+router.post("/:id/checkAvailability",isLoggedIn,wrapAsync(listingControllers.checkAvailabilityRoute))
 
 module.exports=router;

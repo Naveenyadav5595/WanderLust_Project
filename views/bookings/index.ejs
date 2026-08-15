@@ -1,0 +1,128 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container py-4 py-md-5">
+    <!-- Page Header -->
+    <div class="mb-4">
+        <h2 class="fw-bold mb-2">My Bookings</h2>
+        <p class="text-muted mb-0">
+            View and manage your WanderLust bookings.
+        </p>
+    </div>
+    <% if (bookings.length === 0) { %>
+        <!-- No Bookings -->
+        <div class="card border-0 shadow-sm rounded-4 text-center p-5">
+            <div class="mb-3" style="font-size: 50px;">
+                🏡
+            </div>
+            <h4 class="fw-bold">
+                No bookings yet
+            </h4>
+            <p class="text-muted">
+                You haven't made any bookings yet.
+            </p>
+            <a href="/listings"  class="btn btn-dark px-4 py-2 rounded-3" >
+                Explore Listings
+            </a>
+        </div>
+    <% } else { %>
+        <!-- Booking List -->
+        <div class="row g-4">
+            <% bookings.forEach(booking => { %>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                        <div class="card-body p-4">
+                            <!-- Listing -->
+                            <h4 class="fw-bold mb-1 text-break">
+                                <%= booking.listing.title %>
+                            </h4>
+                            <p class="text-muted mb-3 text-break">
+                                📍 <%= booking.listing.location %>,
+                                <%= booking.listing.country %>
+                            </p>
+                            <!-- Status -->
+                            <div class="mb-3">
+                                <% if (booking.status === "confirmed") { %>
+                                    <span class="badge bg-success rounded-pill px-3 py-2">
+                                        ✓ Confirmed
+                                    </span>
+                                <% } else if (booking.status === "pending") { %>
+                                    <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+                                        Payment Pending
+                                    </span>
+                                <% } else if (booking.status === "cancelled") { %>
+                                    <span class="badge bg-danger rounded-pill px-3 py-2">
+                                        Cancelled
+                                    </span>
+                                <% } else if (booking.status === "completed") { %>
+                                    <span class="badge bg-primary rounded-pill px-3 py-2">
+                                        Completed
+                                    </span>
+                                <% } %>
+                            </div>
+                            <hr>
+                            <!-- Booking Details -->
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-2 gap-3">
+                                    <span class="text-muted">
+                                        Check-in
+                                    </span>
+                                    <strong class="text-end">
+                                        <%= booking.checkIn.toDateString() %>
+                                    </strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2 gap-3">
+                                    <span class="text-muted">
+                                        Check-out
+                                    </span>
+                                    <strong class="text-end">
+                                        <%= booking.checkOut.toDateString() %>
+                                    </strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">
+                                        Guests
+                                    </span>
+                                    <strong>
+                                        <%= booking.guests %>
+                                    </strong>
+                                </div>
+                            </div>
+                            <hr>
+                            <!-- Price -->
+                            <div class="d-flex justify-content-between align-items-center gap-3">
+                                <span class="text-muted">
+                                    Total
+                                </span>
+                                <strong class="fs-5 text-nowrap">
+                                    ₹<%= booking.totalPrice.toLocaleString("en-IN") %>
+                                </strong>
+                            </div>
+                            <!-- View Details -->
+                            <a
+                                href="/bookings/<%= booking._id %>"
+                                class="btn btn-dark w-100 mt-4 rounded-3"
+                            >
+                                View Booking
+                            </a>
+                            <% if (booking.status === "cancelled" || booking.status === "completed") { %>
+                                <form action="/bookings/<%= booking._id %>/remove?_method=DELETE" method="POST" onsubmit="return confirmRemove()" class="mt-2" >
+                                <button type="submit"  class="btn btn-outline-danger w-100 rounded-3" >
+                                    Remove from My Bookings
+                                </button>
+                                </form>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } %>
+</div>
+
+<script>
+    function confirmRemove() {
+        return confirm(
+            "Are you sure you want to remove this booking from your bookings?"
+        );
+    }
+</script>

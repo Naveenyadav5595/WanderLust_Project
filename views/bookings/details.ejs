@@ -1,0 +1,228 @@
+<% layout("/layouts/boilerplate") %>
+<div class="container py-4 py-md-5">
+    <!-- Page Header -->
+    <div class="mb-4">
+        <a
+            href="/bookings"
+            class="text-decoration-none text-muted"
+        >
+            ← Back to My Bookings
+        </a>
+        <h2 class="fw-bold mt-3 mb-1">
+            Booking Details
+        </h2>
+        <p class="text-muted mb-0">
+            Review your reservation information.
+        </p>
+    </div>
+    <div class="row g-4 g-lg-5">
+        <!-- LEFT: Booking Information -->
+        <div class="col-12 col-lg-7">
+            <!-- Listing Card -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4 p-md-5">
+                    <p class="text-muted small text-uppercase fw-semibold mb-2">
+                        Property
+                    </p>
+                    <h3 class="fw-bold mb-2 text-break">
+                        <%= listing.title %>
+                    </h3>
+                    <p class="text-muted mb-0 text-break">
+                        📍 <%= listing.location %>,
+                        <%= listing.country %>
+                    </p>
+                </div>
+            </div>
+            <!-- Stay Details -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold mb-4">
+                        Stay Details
+                    </h4>
+                    <div class="row g-3">
+                        <!-- Check-in -->
+                        <div class="col-12 col-sm-6">
+                            <div class="bg-light rounded-3 p-3 h-100">
+                                <small class="text-muted d-block mb-1">
+                                    CHECK-IN
+                                </small>
+                                <strong class="d-block text-break">
+                                    <%= booking.checkIn.toDateString() %>
+                                </strong>
+                            </div>
+                        </div>
+                        <!-- Check-out -->
+                        <div class="col-12 col-sm-6">
+                            <div class="bg-light rounded-3 p-3 h-100">
+                                <small class="text-muted d-block mb-1">
+                                    CHECK-OUT
+                                </small>
+                                <strong class="d-block text-break">
+                                    <%= booking.checkOut.toDateString() %>
+                                </strong>
+                            </div>
+                        </div>
+                        <!-- Guests -->
+                        <div class="col-12">
+                            <div class="bg-light rounded-3 p-3">
+                                <div class="d-flex justify-content-between
+                                            align-items-center gap-3">
+                                    <span class="text-muted">
+                                        Guests
+                                    </span>
+                                    <strong class="text-nowrap">
+                                        <%= booking.guests %>
+                                        <%= booking.guests == 1
+                                            ? "Guest"
+                                            : "Guests"
+                                        %>
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Payment Information -->
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold mb-4">
+                        Payment Information
+                    </h4>
+                    <div class="d-flex justify-content-between
+                                align-items-center mb-3 gap-3">
+                        <span class="text-muted">
+                            Payment Status
+                        </span>
+                        <% if (booking.paymentStatus === "paid") { %>
+                            <span class="badge bg-success rounded-pill px-3 py-2">
+                                ✓ Paid
+                            </span>
+                        <% } else if (booking.paymentStatus === "pending") { %>
+                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+                                Pending
+                            </span>
+                        <% } else if (booking.paymentStatus === "failed") { %>
+                            <span class="badge bg-danger rounded-pill px-3 py-2">
+                                Failed
+                            </span>
+                        <% } else if (booking.paymentStatus === "refunded") { %>
+                            <span class="badge bg-secondary rounded-pill px-3 py-2">
+                                Refunded
+                            </span>
+                        <% } %>
+                    </div>
+                    <div class="d-flex justify-content-between
+                                align-items-center gap-3">
+                        <span class="text-muted">
+                            Booking Status
+                        </span>
+                        <% if (booking.status === "confirmed") { %>
+                            <span class="badge bg-success rounded-pill px-3 py-2">
+                                Confirmed
+                            </span>
+                        <% } else if (booking.status === "pending") { %>
+                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+                                Pending
+                            </span>
+                        <% } else if (booking.status === "cancelled") { %>
+                            <span class="badge bg-danger rounded-pill px-3 py-2">
+                                Cancelled
+                            </span>
+                        <% } else if (booking.status === "completed") { %>
+                            <span class="badge bg-primary rounded-pill px-3 py-2">
+                                Completed
+                            </span>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- RIGHT: Price Summary -->
+        <div class="col-12 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold mb-4">
+                        Booking Summary
+                    </h4>
+                    <!-- Price -->
+                    <div class="d-flex justify-content-between
+                                align-items-center gap-3 mb-3">
+                        <span class="text-muted">
+                            Total Price
+                        </span>
+                        <strong class="fs-4 text-nowrap">
+                            ₹<%= booking.totalPrice.toLocaleString("en-IN") %>
+                        </strong>
+                    </div>
+                    <hr>
+                    <!-- Booking ID -->
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">
+                            BOOKING ID
+                        </small>
+                        <span
+                            class="small text-break"
+                            style="word-break: break-all;"
+                        >
+                            <%= booking._id %>
+                        </span>
+                    </div>
+                    <!-- Payment ID -->
+                    <% if (booking.razorpayPaymentId) { %>
+                        <div class="mb-3">
+                            <small class="text-muted d-block mb-1">
+                                PAYMENT ID
+                            </small>
+                            <span
+                                class="small text-break"
+                                style="word-break: break-all;"
+                            >
+                                <%= booking.razorpayPaymentId %>
+                            </span>
+                        </div>
+                    <% } %>
+                    <!-- Order ID -->
+                    <% if (booking.razorpayOrderId) { %>
+                        <div class="mb-3">
+                            <small class="text-muted d-block mb-1">
+                                RAZORPAY ORDER ID
+                            </small>
+                            <span
+                                class="small text-break"
+                                style="word-break: break-all;"
+                            >
+                                <%= booking.razorpayOrderId %>
+                            </span>
+
+                        </div>
+                    <% } %>
+                    <!-- Back Button -->
+                    <a
+                        href="/bookings"
+                        class="btn btn-dark w-100 mt-3 py-2 rounded-3 fw-semibold"
+                    >
+                        Back to My Bookings
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- // cancel booking -->
+        <% if (booking.status === "pending" || booking.status === "confirmed") { %>
+            <form  action="/bookings/<%= booking._id %>/cancel?_method=DELETE" method="POST" class="mt-2"  onsubmit="return confirmCancel()">
+                <button type="submit" class="btn btn-outline-danger w-100 py-2 rounded-3 fw-semibold">
+                     Cancel Booking
+                </button>
+            </form>
+        <% } %>
+    </div>
+</div>
+
+<script>
+    function confirmCancel() {
+        return confirm(
+            "Are you sure you want to cancel this booking?"
+        );
+    }
+</script>

@@ -1,0 +1,151 @@
+<% layout("/layouts/boilerplate") %>
+<div class="container py-4 py-md-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+            <!-- Payment Card -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-body p-4 p-md-5">
+                    <!-- Header -->
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <span
+                                class="d-inline-flex align-items-center justify-content-center
+                                       bg-light rounded-circle"
+                                style="width: 60px; height: 60px;"
+                            >
+                                🔒
+                            </span>
+                        </div>
+                        <h2 class="fw-bold mb-2">
+                            Complete Payment
+                        </h2>
+                        <p class="text-muted mb-0">
+                            Securely complete your booking
+                        </p>
+                    </div>
+                    <!-- Listing -->
+                    <div class="bg-light rounded-4 p-3 mb-4">
+                        <h4 class="fw-bold mb-1 text-break">
+                            <%= listing.title %>
+                        </h4>
+                        <p class="text-muted mb-0">
+                            📍 <%= listing.location %>,
+                            <%= listing.country %>
+                        </p>
+                    </div>
+                    <!-- Stay Details -->
+                    <h6 class="fw-bold text-uppercase text-muted mb-3">
+                        Stay Details
+                    </h6>
+                    <div class="row g-3 mb-4">
+                        <!-- Check-in -->
+                        <div class="col-12 col-sm-6">
+                            <div class="border rounded-3 p-3 h-100">
+                                <small class="text-muted d-block mb-1">
+                                    CHECK-IN
+                                </small>
+                                <strong class="d-block text-break">
+                                    <%= booking.checkIn.toDateString() %>
+                                </strong>
+                            </div>
+                        </div>
+                        <!-- Check-out -->
+                        <div class="col-12 col-sm-6">
+                            <div class="border rounded-3 p-3 h-100">
+                                <small class="text-muted d-block mb-1">
+                                    CHECK-OUT
+                                </small>
+                                <strong class="d-block text-break">
+                                    <%= booking.checkOut.toDateString() %>
+                                </strong>
+                            </div>
+                        </div>
+                        <!-- Guests -->
+                        <div class="col-12">
+                            <div class="border rounded-3 p-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">
+                                        Guests
+                                    </span>
+                                    <strong>
+                                        <%= booking.guests %>
+                                        <%= booking.guests == 1 ? "Guest" : "Guests" %>
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="my-4">
+                    <!-- Total -->
+                    <div class="d-flex justify-content-between align-items-center gap-3">
+                        <div>
+                            <span class="text-muted d-block">
+                                Total Amount
+                            </span>
+                            <small class="text-muted">
+                                Secure payment
+                            </small>
+                        </div>
+                        <strong class="fs-3 text-end text-nowrap">
+                            ₹<%= booking.totalPrice.toLocaleString("en-IN") %>
+                        </strong>
+                    </div>
+                    <!-- Payment Button -->
+                    <button
+                        id="pay-btn"
+                        type="button"
+                        class="btn btn-dark btn-lg w-100 mt-4 py-3 rounded-3 fw-semibold"
+                    >
+                        Pay ₹<%= booking.totalPrice.toLocaleString("en-IN") %>
+                    </button>
+                    <!-- Security message -->
+                    <div class="text-center mt-3">
+
+                        <small class="text-muted">
+                            🔒 Your payment is secure and encrypted
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+    const options = {
+        key: "<%=  razorpayKeyId%>",
+        amount: <%= order.amount %>,
+        currency: "<%= order.currency %>",
+        name: "WanderLust",
+        description: "Booking Payment",
+        order_id: "<%= order.id %>",
+        handler: async function (response) {
+            try {
+                const result = await fetch("/bookings/verify", { method: "POST", headers: {"Content-Type": "application/json" },
+                   body: JSON.stringify({
+                      razorpay_order_id: response.razorpay_order_id,
+                      razorpay_payment_id: response.razorpay_payment_id,
+                      razorpay_signature: response.razorpay_signature
+                   })
+                });
+                const data = await result.json();
+                if (data.success) { window.location.href = `/bookings/${data.bookingId}/success`;} 
+                else {
+                    alert("Payment verification failed.");
+                }
+            } catch (error) {
+                alert("Something went wrong while verifying payment.");
+            }
+        },
+        theme: {
+            color: "#000000"
+        }
+    };
+    const razorpay = new Razorpay(options);
+    document.getElementById("pay-btn").onclick = function (e) {razorpay.open();
+        e.preventDefault();
+    };
+</script>
